@@ -9,8 +9,6 @@
 #ifndef STANDARDRECORD_H
 #define STANDARDRECORD_H
 
-#include "StandardRecord/SRDune.h"
-
 /// Common Analysis Files
 namespace caf
 {
@@ -24,8 +22,6 @@ namespace caf
   public:
     StandardRecord();
     ~StandardRecord();
-
-    SRDune dune;
   };
   
 } // end namespace

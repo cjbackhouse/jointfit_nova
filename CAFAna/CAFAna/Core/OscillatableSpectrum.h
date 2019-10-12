@@ -4,7 +4,6 @@
 
 #include "CAFAna/Core/Binning.h"
 #include "CAFAna/Core/Spectrum.h"
-#include "CAFAna/Core/SpectrumLoaderBase.h"
 
 #include <string>
 
@@ -20,31 +19,9 @@ namespace ana
   class OscillatableSpectrum: public ReweightableSpectrum
   {
   public:
-    friend class SpectrumLoaderBase;
-    friend class SpectrumLoader;
-    friend class NullLoader;
-
-    OscillatableSpectrum(const std::string& label,
-                         const Binning& bins,
-                         SpectrumLoaderBase& loader,
-                         const Var& var,
-                         const Cut& cut,
-                         const SystShifts& shift = kNoShift,
-                         const Var& wei = kUnweighted);
-
-    OscillatableSpectrum(SpectrumLoaderBase& loader,
-                         const HistAxis& axis,
-                         const Cut& cut,
-                         const SystShifts& shift = kNoShift,
-                         const Var& wei = kUnweighted);
-
     OscillatableSpectrum(const std::string& label, const Binning& bins);
     OscillatableSpectrum(const std::string& label, double pot, double livetime,
                          const Binning& bins);
-    OscillatableSpectrum(TH2* h,
-                         const std::vector<std::string>& labels,
-                         const std::vector<Binning>& bins,
-                         double pot, double livetime);
 
     OscillatableSpectrum(std::unique_ptr<TH2D> h,
                          const std::vector<std::string>& labels,
@@ -88,18 +65,8 @@ namespace ana
   protected:
     // Derived classes can be trusted take care of their own construction
     OscillatableSpectrum(const std::vector<std::string>& labels,
-                         const std::vector<Binning>& bins,
-                         const Var& rwVar)
-      : ReweightableSpectrum(labels, bins, rwVar),
-        fCachedOsc(0, {}, {}, 0, 0),
-        fCachedHash(0)
-    {
-    }
-
-    OscillatableSpectrum(const std::string& label,
-                         const Binning& bins,
-                         const Var& rwVar)
-      : ReweightableSpectrum(label, bins, rwVar),
+                         const std::vector<Binning>& bins)
+      : ReweightableSpectrum(labels, bins),
         fCachedOsc(0, {}, {}, 0, 0),
         fCachedHash(0)
     {

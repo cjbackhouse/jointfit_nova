@@ -3,8 +3,6 @@
 #include "CAFAna/Core/Binning.h"
 #include "CAFAna/Core/HistCache.h"
 #include "CAFAna/Core/Ratio.h"
-#include "CAFAna/Core/Var.h"
-#include "CAFAna/Core/SpectrumLoaderBase.h"
 #include "CAFAna/Core/Utilities.h"
 
 #include "TDirectory.h"
@@ -18,81 +16,11 @@
 namespace ana
 {
   //----------------------------------------------------------------------
-  ReweightableSpectrum::ReweightableSpectrum(SpectrumLoaderBase& loader,
-                                             const HistAxis& recoAxis,
-                                             const HistAxis& trueAxis,
-                                             const Cut& cut,
-                                             const SystShifts& shift,
-                                             const Var& wei)
-    : ReweightableSpectrum(recoAxis.GetLabels(), recoAxis.GetBinnings(),
-                           trueAxis.GetVars()[0])
-  {
-    assert(trueAxis.NDimensions() == 1);
-
-    fTrueLabel = trueAxis.GetLabels()[0];
-
-    DontAddDirectory guard;
-
-    // Can't use HistCache here because y-axis is not necessarily
-    // TrueEnergyBinning. TODO - that should maybe be generalized.
-
-    const std::string name = UniqueName();
-
-    const Binning xbins = Bins1DX();
-    const Binning ybins = trueAxis.GetBinnings()[0];
-
-
-    // Ugh combinatorics
-    if(xbins.IsSimple() && ybins.IsSimple())
-      fHist =  new TH2D(name.c_str(), "",
-                        xbins.NBins(), xbins.Min(), xbins.Max(),
-                        ybins.NBins(), ybins.Min(), ybins.Max());
-
-    if(xbins.IsSimple() && !ybins.IsSimple())
-      fHist =  new TH2D(name.c_str(), "",
-                        xbins.NBins(), xbins.Min(), xbins.Max(),
-                        ybins.NBins(), &ybins.Edges()[0]);
-
-    if(!xbins.IsSimple() && ybins.IsSimple())
-      fHist =  new TH2D(name.c_str(), "",
-                        xbins.NBins(), &xbins.Edges()[0],
-                        ybins.NBins(), ybins.Min(), ybins.Max());
-
-    if(!xbins.IsSimple() && !ybins.IsSimple())
-      fHist =  new TH2D(name.c_str(), "",
-                        xbins.NBins(), &xbins.Edges()[0],
-                        ybins.NBins(), &ybins.Edges()[0]);
-
-    loader.AddReweightableSpectrum(*this, recoAxis.GetMultiDVar(), cut, shift, wei);
-  }
-
-  //----------------------------------------------------------------------
-  ReweightableSpectrum::ReweightableSpectrum(const Var& rwVar,
-                                             const std::string& xlabel, const std::string& ylabel,
-                                             double pot,
-                                             int nbinsx, double xmin, double xmax,
-                                             int nbinsy, double ymin, double ymax)
-    : ReweightableSpectrum(xlabel,
-                           Binning::Simple(nbinsx, xmin, xmax),
-                           rwVar)
-  {
-    DontAddDirectory guard;
-
-    fHist = new TH2D(UniqueName().c_str(), "",
-                     nbinsx, xmin, xmax, nbinsy, ymin, ymax);
-
-    fTrueLabel = ylabel;
-
-    // Ensure errors get accumulated properly
-    fHist->Sumw2();
-  }
-
-  //----------------------------------------------------------------------
-  ReweightableSpectrum::ReweightableSpectrum(const Var& rwVar, TH2* h,
+  ReweightableSpectrum::ReweightableSpectrum(TH2* h,
                                              const std::vector<std::string>& labels,
                                              const std::vector<Binning>& bins,
                                              double pot, double livetime)
-    : ReweightableSpectrum(labels, bins, rwVar)
+    : ReweightableSpectrum(labels, bins)
   {
     fPOT = pot;
     fLivetime = livetime;
@@ -133,13 +61,12 @@ namespace ana
     fTrueLabel = h->GetYaxis()->GetTitle();
   }
 
-    //----------------------------------------------------------------------
-  ReweightableSpectrum::ReweightableSpectrum(const Var& rwVar,
-                                             std::unique_ptr<TH2D> h,
+  //----------------------------------------------------------------------
+  ReweightableSpectrum::ReweightableSpectrum(std::unique_ptr<TH2D> h,
                                              const std::vector<std::string>& labels,
                                              const std::vector<Binning>& bins,
                                              double pot, double livetime)
-    : ReweightableSpectrum(labels, bins, rwVar)
+    : ReweightableSpectrum(labels, bins)
   {
     fHist = h.release();
     fPOT = pot;
@@ -168,7 +95,7 @@ namespace ana
 
   //----------------------------------------------------------------------
   ReweightableSpectrum::ReweightableSpectrum(const ReweightableSpectrum& rhs)
-    : fRWVar(rhs.fRWVar), fLabels(rhs.fLabels), fBins(rhs.fBins)
+    : fLabels(rhs.fLabels), fBins(rhs.fBins)
   {
     DontAddDirectory guard;
 
@@ -176,8 +103,6 @@ namespace ana
 
     fPOT = rhs.fPOT;
     fLivetime = rhs.fLivetime;
-
-    assert( rhs.fLoaderCount.empty() ); // Copying with pending loads is unexpected
   }
 
   //----------------------------------------------------------------------
@@ -187,7 +112,6 @@ namespace ana
 
     DontAddDirectory guard;
 
-    fRWVar = rhs.fRWVar;
     fLabels = rhs.fLabels;
     fBins = rhs.fBins;
 
@@ -195,8 +119,6 @@ namespace ana
     fHist = new TH2D(*rhs.fHist);
     fPOT = rhs.fPOT;
     fLivetime = rhs.fLivetime;
-
-    assert( fLoaderCount.empty() ); // Copying with pending loads is unexpected
 
     return *this;
   }
@@ -533,14 +455,6 @@ namespace ana
   }
 
   //----------------------------------------------------------------------
-  void ReweightableSpectrum::RemoveLoader(SpectrumLoaderBase* p)
-  { fLoaderCount.erase(p); }
-
-  //----------------------------------------------------------------------
-  void ReweightableSpectrum::AddLoader(SpectrumLoaderBase* p)
-  { fLoaderCount.insert(p); }
-
-  //----------------------------------------------------------------------
   void ReweightableSpectrum::SaveTo(TDirectory* dir) const
   {
     TDirectory* tmp = gDirectory;
@@ -596,8 +510,7 @@ namespace ana
       labels.push_back(spect->GetXaxis()->GetTitle());
     }
 
-    return std::make_unique<ReweightableSpectrum>(kUnweighted,
-                                                  spect,
+    return std::make_unique<ReweightableSpectrum>(spect,
                                                   labels, bins,
                                                   hPot->GetBinContent(1),
                                                   hLivetime->GetBinContent(1));
