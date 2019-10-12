@@ -26,10 +26,6 @@ namespace ana
     double GetShift(const ISyst* syst) const;
     void ResetToNominal();
 
-    void Shift(Restorer& restore,
-               caf::StandardRecord* sr,
-               double& weight) const;
-
     /// Brief description of component shifts, for printing to screen
     std::string ShortName() const;
     /// Long description of component shifts, for plot labels

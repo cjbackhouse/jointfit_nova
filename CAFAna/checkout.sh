@@ -61,10 +61,8 @@ EOF
 
 ### Link our own stuff in ###
 
-ln -s ../../StandardRecord .
 ln -s ../../CAFAna .
 cd include/
-ln -s ../StandardRecord .
 ln -s ../CAFAna/
 cd ..
 

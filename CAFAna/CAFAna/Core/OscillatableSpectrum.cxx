@@ -6,8 +6,6 @@
 #include "CAFAna/Core/Ratio.h"
 #include "CAFAna/Core/Utilities.h"
 
-#include "StandardRecord/StandardRecord.h"
-
 #include "OscLib/func/IOscCalculator.h"
 
 #include "TDirectory.h"

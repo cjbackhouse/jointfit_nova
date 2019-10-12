@@ -58,14 +58,6 @@ namespace ana
   }
 
   //----------------------------------------------------------------------
-  void SystShifts::Shift(Restorer& restore,
-                         caf::StandardRecord* sr,
-                         double& weight) const
-  {
-    for(auto it: fSysts) it.first->Shift(it.second, restore, sr, weight);
-  }
-
-  //----------------------------------------------------------------------
   std::string SystShifts::ShortName() const
   {
     if(fSysts.empty()) return "nominal";
