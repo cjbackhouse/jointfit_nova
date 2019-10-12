@@ -272,7 +272,6 @@ namespace ana
       }
     }
 
-    // TODO: can this all be more efficient?
     return Spectrum(std::unique_ptr<TH1D>(hRet), fLabels, fBins, fPOT, fLivetime);
   }
 

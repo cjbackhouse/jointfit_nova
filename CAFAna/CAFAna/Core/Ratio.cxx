@@ -25,8 +25,6 @@ namespace ana
     HistCache::Delete(temp);
 
     fHist->GetYaxis()->SetTitle("Ratio");
-
-    // TODO: set error bars smartly
   }
 
   //----------------------------------------------------------------------

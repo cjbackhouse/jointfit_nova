@@ -450,8 +450,6 @@ namespace ana
       *err = sqrt(*err) * ratio;
     }
 
-    // TODO how to integrate fHistSparse?
-
     return fHist->Integral(0, -1) * ratio;
   }
 
