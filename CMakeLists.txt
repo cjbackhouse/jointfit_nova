@@ -6,11 +6,15 @@ project(CAFAna)
 set(CMAKE_CXX_STANDARD 14)
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -NDEBUG")  # needed to ensure assert() causes an abort() even in optimized builds
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DNDEBUG")  # needed to ensure assert() causes an abort() even in optimized builds
+set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--no-undefined")
 
 # ROOT is a non-negotiable dependency
 find_package(ROOT REQUIRED)
 
+# this is quite lazy -- it links ALL the ROOT libraries into the designated one.
+# in principle we should figure out which ones we actually need and link only those.
+# but.... some other time
 function(link_root target)
     unset(libs CACHE)
     list(APPEND libs ${ROOT_LIBRARIES})
@@ -30,6 +34,8 @@ include_directories(
         ${ROOT_INCLUDE_DIRS}
 )
 
+# by default make the bin/ and lib/ dirs in the top of the source dir.
+# can by overridden on command line if desired
 set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR})
 
 ###########   now go into the subdirs and do the actual work
