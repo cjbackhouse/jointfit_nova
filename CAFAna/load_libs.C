@@ -12,15 +12,6 @@ void load(std::string lib)
 
 void load_libs()
 {
-  TString qsrt = gSystem->Getenv("SRT_QUAL");
-  // Mirror the optimization settings in use elsewhere
-  if( qsrt.Contains("debug") ){
-    gSystem->SetAclicMode(TSystem::kDebug);
-  }
-  else{
-    gSystem->SetAclicMode(TSystem::kOpt);
-  }
-
   // This magic incantation prevents ROOT doing slow cleanup work in
   // TList::RecursiveRemove() under ~TH1(). It also tends to lead to shutdown
   // crashes. This seems like a good compromise: go fast in batch mode
@@ -34,7 +25,7 @@ void load_libs()
   gSystem->SetFlagsOpt(TString(gSystem->GetFlagsOpt())+" -fdiagnostics-color=auto -UNDEBUG"); // match gcc's maxopt behaviour of retaining assert()
 
   // Include path
-  TString includes = "-I$SRT_PRIVATE_CONTEXT/include/ -I$SRT_PUBLIC_CONTEXT/include/ -I$ROOTSYS/include -I$NUTOOLS_INC -I$GENIE_INC/GENIE/";
+  TString includes = "-I$JOINTFIT_DIR -I$ROOTSYS/include";
 
   const std::vector<std::string> libs =
     {
