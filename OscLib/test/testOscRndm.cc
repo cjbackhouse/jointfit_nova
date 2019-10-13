@@ -32,7 +32,7 @@ int main()
   double dmsq21, dmsq32, th12, th23, th13, delta, E, rho, L;
   int anti, from, to;
 
-  const int kNumCalcs = 5;
+  const int kNumCalcs = 1;
   const int kNumDiffs = kNumCalcs*(kNumCalcs-1)/2;
   const int kRows = GetRows(kNumDiffs);
   const int kCols = kNumDiffs/kRows;
