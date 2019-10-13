@@ -1,4 +1,4 @@
-set(LIBRARY OscLibFunc)
+set(LIBRARY CAFAnaExperiment)
 
 file(GLOB HEADER_FILES *.h)
 file(GLOB SOURCES *.cxx)
