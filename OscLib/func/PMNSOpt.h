@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////
-/// \class _PMNSOpt
+/// \class PMNSOpt
 ///
 /// \brief Implementation of oscillations of neutrinos in matter in a
 ///        three-neutrino framework.
@@ -34,8 +34,10 @@
 #include <list>
 #include <complex>
 
-namespace osc
-{
+namespace osc {
+  // Some useful complex numbers
+  static std::complex<double> zero(0.0,0.0);
+  static std::complex<double> one (1.0,0.0);
 
   // Unit conversion constants
   static const double kKm2eV  = 5.06773103202e+09; ///< km to eV^-1
@@ -46,88 +48,83 @@ namespace osc
   static const double kGf     = 1.166371e-5;
 
   /// Optimized version of \ref PMNS
-  template <typename T>
-  class _PMNSOpt
-  {
-    public:
-      _PMNSOpt();
-      virtual ~_PMNSOpt() = default;
+  class PMNSOpt {
+  public:
+    PMNSOpt();
+    virtual ~PMNSOpt();
 
-      /// Set the parameters of the PMNS matrix
-      /// @param th12    - The angle theta_12 in radians
-      /// @param th23    - The angle theta_23 in radians
-      /// @param th13    - The angle theta_13 in radians
-      /// @param deltacp - The CPV phase delta_CP in radians
-      virtual void SetMix(const T &th12, const T &th23, const T &th13, const T &deltacp);
+    /// Set the parameters of the PMNS matrix
+    /// @param th12    - The angle theta_12 in radians
+    /// @param th23    - The angle theta_23 in radians
+    /// @param th13    - The angle theta_13 in radians
+    /// @param deltacp - The CPV phase delta_CP in radians
+    virtual void SetMix(double th12, double th23, double th13, double deltacp);
 
-      /// Set the mass-splittings
-      /// @param dm21 - m2^2-m1^2 in eV^2
-      /// @param dm32 - m3^2-m2^2 in eV^2
-      virtual void SetDeltaMsqrs(const T &dm21, const T &dm32);
+    /// Set the mass-splittings
+    /// @param dm21 - m2^2-m1^2 in eV^2
+    /// @param dm32 - m3^2-m2^2 in eV^2
+    virtual void SetDeltaMsqrs(double dm21, double dm32);
 
-      /// Propagate a neutrino through a slab of matter
-      /// @param L - length of slab (km)
-      /// @param E - neutrino energy in GeV
-      /// @param Ne - electron number density of matter in mole/cm^3
-      /// @param anti - +1 = neutrino case, -1 = anti-neutrino case
-      virtual void PropMatter(double L, double E, double Ne, int anti=1);
-      virtual void PropMatter(const std::list<double>& L,
-                              double                   E,
-                              const std::list<double>& Ne,
-                              int anti);
+    /// Propagate a neutrino through a slab of matter
+    /// @param L - length of slab (km)
+    /// @param E - neutrino energy in GeV
+    /// @param Ne - electron number density of matter in mole/cm^3
+    /// @param anti - +1 = neutrino case, -1 = anti-neutrino case
+    virtual void PropMatter(double L, double E, double Ne, int anti=1);
+    virtual void PropMatter(const std::list<double>& L,
+                    double                   E,
+                    const std::list<double>& Ne,
+                    int anti);
 
-      /// Propagate a neutrino through vacuum
-      /// @param L - length of slab (km)
-      /// @param E - neutrino energy in GeV
-      /// @param anti - +1 = neutrino case, -1 = anti-neutrino case
-      virtual void PropVacuum(double L, double E, int anti=1);
+    /// Propagate a neutrino through vacuum
+    /// @param L - length of slab (km)
+    /// @param E - neutrino energy in GeV
+    /// @param anti - +1 = neutrino case, -1 = anti-neutrino case
+    virtual void PropVacuum(double L, double E, int anti=1);
 
-      /// Return the probability of final state in flavour flv
-      /// @param flv - final flavor (0,1,2) = (nue,numu,nutau)
-      virtual T P(int flv) const;
+    /// Return the probability of final state in flavour flv
+    /// @param flv - final flavor (0,1,2) = (nue,numu,nutau)
+    virtual double P(int flv) const;
 
-      /// Erase memory of neutrino propagate and reset neutrino
-      /// to pure flavour flv. Preserves values of mixing and mass-splittings
-      /// @param flv - final flavor (0,1,2) = (nue,numu,nutau)
-      virtual void ResetToFlavour(int flv=1);
+    /// Erase memory of neutrino propagate and reset neutrino
+    /// to pure flavour flv. Preserves values of mixing and mass-splittings
+    /// @param flv - final flavor (0,1,2) = (nue,numu,nutau)
+    virtual void ResetToFlavour(int flv=1);
 
-    protected:
-      // A shorthand...
-      typedef std::complex<T> complex;
+  protected:
+    // A shorthand...
+    typedef std::complex<double> complex;
 
-      /// Build H*lv, where H is the Hamiltonian in vacuum on flavour basis
-      /// and lv is the oscillation length
-      virtual void BuildHlv();
+    /// Build H*lv, where H is the Hamiltonian in vacuum on flavour basis
+    /// and lv is the oscillation length
+    virtual void BuildHlv();
 
-      /// Solve the full Hamiltonian for eigenvectors and eigenvalues
-      /// @param E - neutrino energy in GeV
-      /// @param Ne - electron number density of matter in mole/cm^3
-      /// @param anti - +1 = neutrino case, -1 = anti-neutrino case
-      virtual void SolveHam(double E, double Ne, int anti);
+    /// Solve the full Hamiltonian for eigenvectors and eigenvalues
+    /// @param E - neutrino energy in GeV
+    /// @param Ne - electron number density of matter in mole/cm^3
+    /// @param anti - +1 = neutrino case, -1 = anti-neutrino case
+    virtual void SolveHam(double E, double Ne, int anti);
 
-      /// Set the eigensystem to the analytic solution of the vacuum Hamiltonian
-      /// @param E - neutrino energy in GeV
-      /// @param anti - +1 = neutrino case, -1 = anti-neutrino case
-      virtual void SetVacuumEigensystem(double E, int anti);
+    /// Set the eigensystem to the analytic solution of the vacuum Hamiltonian
+    /// @param E - neutrino energy in GeV
+    /// @param anti - +1 = neutrino case, -1 = anti-neutrino case
+    virtual void SetVacuumEigensystem(double E, int anti);
 
-      T       fDm21;          ///< m^2_2 - m^2_1 in vacuum
-      T       fDm31;          ///< m^2_3 - m^2_1 in vacuum
-      T       fTheta12;       ///< theta12 mixing angle
-      T       fTheta23;       ///< theta23 mixing angle
-      T       fTheta13;       ///< theta13 mixing angle
-      T       fDeltaCP;       ///< CP violating phase
-      complex fHlv[3][3];     ///< dimensionless matrix H*lv
-      complex fEvec[3][3];    ///< Eigenvectors of the Hamiltonian
-      T       fEval[3];       ///< Eigenvalues of the Hamiltonian
-      complex fNuState[3];    ///< The neutrino current state
-      double  fCachedNe;      ///< Cached electron density
-      double  fCachedE;       ///< Cached neutrino energy
-      int     fCachedAnti;    ///< Cached nu/nubar selector
-      bool    fBuiltHlv;      ///< Tag to avoid rebuilding Hlv
+    double  fDm21;          ///< m^2_2 - m^2_1 in vacuum
+    double  fDm31;          ///< m^2_3 - m^2_1 in vacuum
+    double  fTheta12;       ///< theta12 mixing angle
+    double  fTheta23;       ///< theta23 mixing angle
+    double  fTheta13;       ///< theta13 mixing angle
+    double  fDeltaCP;       ///< CP violating phase
+    complex fHlv[3][3];     ///< dimensionless matrix H*lv
+    complex fEvec[3][3];    ///< Eigenvectors of the Hamiltonian
+    double  fEval[3];       ///< Eigenvalues of the Hamiltonian
+    complex fNuState[3];    ///< The neutrino current state
+    double  fCachedNe;      ///< Cached electron density
+    double  fCachedE;       ///< Cached neutrino energy
+    int     fCachedAnti;    ///< Cached nu/nubar selector
+    bool    fBuiltHlv;      ///< Tag to avoid rebuilding Hlv
   };
-
-  // preserve older behavior
-  typedef _PMNSOpt<double> PMNSOpt;
 }
 #endif
 ////////////////////////////////////////////////////////////////////////

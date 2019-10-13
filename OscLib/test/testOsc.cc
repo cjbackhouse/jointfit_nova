@@ -17,11 +17,6 @@
 #include <iostream>
 #include <fenv.h>
 
-#ifndef DARWINBUILD
-#include "Utilities/func/StanVar.h"
-#endif
-#include "Utilities/func/StanUtils.h"
-
 int main()
 {
 
@@ -41,17 +36,17 @@ int main()
 
   TLegend* leg = new TLegend(.1, .1, .9, .9);
 
+  const int kNumCalcs = 5;
+
   osc::OscCalculator osc1;
   osc::OscCalculatorGeneral osc2;
   osc::OscCalculatorPMNS osc3;
   osc::OscCalculatorPMNSOpt osc4;
   osc::OscCalculatorPMNS_CPT osc5;
-  osc::_OscCalculatorPMNSOpt<stan::math::var> osc6;
 
-  std::vector<osc::IOscCalculatorAdjustable*> oscs {&osc1, &osc2, &osc3, &osc4, &osc5};
-  std::vector<osc::_IOscCalculatorAdjustable<stan::math::var>*> oscStan {&osc6};
-  std::vector<TString> names {"Approx", "General", "PMNS", "PMNSOpt", "PMNS_CPT", "PMNSOpt_Stan"};
-  std::vector<int> colors {kBlue, kRed, kGreen+2, kMagenta, kBlack, kCyan};
+  osc::IOscCalculatorAdjustable* oscs[kNumCalcs] = {&osc1, &osc2, &osc3, &osc4, &osc5};
+  const TString names[kNumCalcs] = {"Approx", "General", "PMNS", "PMNSOpt", "PMNS_CPT"};
+  const int colors[kNumCalcs] = {kBlue, kRed, kGreen+2, kMagenta};
 
   const double L = 800;
   const double rho = 3;
@@ -63,7 +58,7 @@ int main()
   const double delta = 1.5*TMath::Pi();
 
   for(int hie = -1; hie <= +1; hie += 2){
-    for(std::size_t n = 0; n < oscs.size(); ++n){
+    for(int n = 0; n < kNumCalcs; ++n){
       oscs[n]->SetL(L);
       oscs[n]->SetRho(rho);
       oscs[n]->SetDmsq21(dmsq21);
@@ -81,19 +76,6 @@ int main()
           osc5.SetdCPBar(delta);
       }
     }
-    for(auto osc : oscStan){
-      osc->SetL(L);
-      osc->SetRho(rho);
-      osc->SetDmsq21(dmsq21);
-      osc->SetDmsq32(hie*dmsq32);
-      osc->SetTh12(th12);
-      osc->SetTh13(th13);
-      osc->SetTh23(th23);
-      osc->SetdCP(delta);
-
-    }
-
-    auto numCalcs = oscs.size() + oscStan.size();
 
     TString nus[3] = {"e", "#mu", "#tau"};
     TString antinus[3] = {"#bar{e}", "#bar{#mu}", "#bar{#tau}"};
@@ -109,22 +91,17 @@ int main()
           TPad* canv = canvs[(1-anti)/2+(1-hie)];
           const int padIdx = (from/2-6)+3*(to/2-6)+1;
           canv->cd(padIdx);
-          std::vector<TGraph*> gs;
-          for(std::size_t n = 0; n < numCalcs; ++n) gs.push_back(new TGraph);
+          TGraph* gs[kNumCalcs];
+          for(int n = 0; n < kNumCalcs; ++n) gs[n] = new TGraph;
           for(double E = .1; E < 5; E *= 1.01){
-            std::vector<double> Ps;
-            std::size_t n = 0;
-            for(; n < oscs.size(); ++n){
-              Ps.push_back(oscs[n]->P(anti*from, anti*to, E));
-              gs[n]->SetPoint(gs[n]->GetN(), E, Ps[n]);
+            double Ps[kNumCalcs];
+            for(int n = 0; n < kNumCalcs; ++n){
+              const double P = oscs[n]->P(anti*from, anti*to, E);
+              Ps[n] = P;
+              gs[n]->SetPoint(gs[n]->GetN(), E, P);
             }
-            for(auto osc : oscStan){
-              Ps.push_back(util::GetValAs<double>(osc->P(anti * from, anti * to, E)));
-              gs[n]->SetPoint(gs[n]->GetN(), E, Ps[n]);
-              ++n;
-            }
-            for(std::size_t i = 0; i < Ps.size(); ++i){
-              for(std::size_t j = i+1; j < Ps.size(); ++j){
+            for(int i = 0; i < kNumCalcs-1; ++i){
+              for(int j = i+1; j < kNumCalcs; ++j){
                 if(fabs(Ps[i]-Ps[j]) > .01 && E > 0.25){
                   std::cerr << "!!! Probabilities for " << title
                             << " differ at " << E << " GeV. "
@@ -138,7 +115,7 @@ int main()
           gs[0]->SetTitle(title);
           gs[0]->GetXaxis()->SetTitle("E (GeV)");
 
-          for(std::size_t n = 0; n < numCalcs; ++n){
+          for(int n = 0; n < kNumCalcs; ++n){
             gs[n]->SetLineColor(colors[n]);
             if(n) gs[n]->SetLineStyle(7);
             gs[n]->Draw(n ? "l same" : "al");

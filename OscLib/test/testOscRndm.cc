@@ -1,7 +1,11 @@
 #include <cmath>
 #include <vector>
 
+#include "OscLib/func/OscCalculator.h"
+#include "OscLib/func/OscCalculatorGeneral.h"
+#include "OscLib/func/OscCalculatorPMNS.h"
 #include "OscLib/func/OscCalculatorPMNSOpt.h"
+#include "OscLib/func/OscCalculatorPMNS_CPT.h"
 
 #include "TCanvas.h"
 #include "TFile.h"

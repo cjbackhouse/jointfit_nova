@@ -16,32 +16,29 @@
 namespace osc
 {
   /// General interface to oscillation calculators
-  template <typename T>
-  class _IOscCalculator
+  class IOscCalculator
   {
   public:
-    virtual ~_IOscCalculator() {}
+    virtual ~IOscCalculator() {}
 
-    virtual _IOscCalculator* Copy() const = 0;
+    virtual IOscCalculator* Copy() const = 0;
 
     /// E in GeV; flavors as PDG codes (so, neg==>antinu)
-    virtual T P(int flavBefore, int flavAfter, double E) = 0;
+    virtual double P(int flavBefore, int flavAfter, double E) = 0;
 
     /// \brief Use to check two calculators are in the same state
     ///
     /// \return Null means not implemented for this calculator
     virtual TMD5* GetParamsHash() const {return 0;}
   };
-  typedef _IOscCalculator<double> IOscCalculator;
 
   /// Pass neutrinos through unchanged
-  template <typename T>
-  class _NoOscillations: public _IOscCalculator<T>
+  class NoOscillations: public IOscCalculator
   {
   public:
-    virtual _IOscCalculator<T>* Copy() const override {return new _NoOscillations<T>;}
+    virtual IOscCalculator* Copy() const override {return new NoOscillations;}
 
-    virtual T P(int from, int to, double /*E*/) override
+    virtual double P(int from, int to, double /*E*/) override
     {
       if(from == to || to == 0) return 1;
       return 0;
@@ -57,60 +54,50 @@ namespace osc
       return ret;
     }
   };
-  typedef _NoOscillations<double> NoOscillations;
 
   /// General interface to any calculator that lets you set the parameters
-  template <typename T>
-  class _IOscCalculatorAdjustable : public _IOscCalculator<T>
+  class IOscCalculatorAdjustable : public IOscCalculator
   {
-    public:
-      virtual ~_IOscCalculatorAdjustable();
-      virtual _IOscCalculatorAdjustable<T>* Copy() const = 0;
+  public:
+    virtual IOscCalculatorAdjustable* Copy() const = 0;
 
-      // These setters are left unimplemented here, since calculators may want
-      // to compute additional values when these are set.
-      virtual void SetL     (double L       ) = 0;
-      virtual void SetRho   (double rho     ) = 0;
-      virtual void SetDmsq21(const T& dmsq21) = 0;
-      virtual void SetDmsq32(const T& dmsq32) = 0;
-      virtual void SetTh12  (const T& th12  ) = 0;
-      virtual void SetTh13  (const T& th13  ) = 0;
-      virtual void SetTh23  (const T& th23  ) = 0;
-      virtual void SetdCP   (const T& dCP   ) = 0;
+    // These setters are left unimplemented here, since calculators may want
+    // to compute additional values when these are set.
+    virtual void SetL     (double L     ) = 0;
+    virtual void SetRho   (double rho   ) = 0;
+    virtual void SetDmsq21(double dmsq21) = 0;
+    virtual void SetDmsq32(double dmsq32) = 0;
+    virtual void SetTh12  (double th12  ) = 0;
+    virtual void SetTh13  (double th13  ) = 0;
+    virtual void SetTh23  (double th23  ) = 0;
+    virtual void SetdCP   (double dCP   ) = 0;
 
-      virtual double GetL     () const { return fL      ; }
-      virtual double GetRho   () const { return fRho    ; }
-      virtual T      GetDmsq21() const { return fDmsq21 ; }
-      virtual T      GetDmsq32() const { return fDmsq32 ; }
-      virtual T      GetTh12  () const { return fTh12   ; }
-      virtual T      GetTh13  () const { return fTh13   ; }
-      virtual T      GetTh23  () const { return fTh23   ; }
-      virtual T      GetdCP   () const { return fdCP    ; }
+    virtual double GetL     () const { return fL      ; }
+    virtual double GetRho   () const { return fRho    ; }
+    virtual double GetDmsq21() const { return fDmsq21 ; }
+    virtual double GetDmsq32() const { return fDmsq32 ; }
+    virtual double GetTh12  () const { return fTh12   ; }
+    virtual double GetTh13  () const { return fTh13   ; }
+    virtual double GetTh23  () const { return fTh23   ; }
+    virtual double GetdCP   () const { return fdCP    ; }
 
-    protected:
-      /// \brief This is only a safe implementation if your calculator only
-      /// depends on these eight parameters
-      ///
-      /// \param txt A string to uniquely identify your calculator class
-      TMD5* GetParamsHashDefault(const std::string& txt) const;
+  protected:
+    /// \brief This is only a safe implementation if your calculator only
+    /// depends on these eight parameters
+    ///
+    /// \param txt A string to uniquely identify your calculator class
+    TMD5* GetParamsHashDefault(const std::string& txt) const;
 
-      // Set by the user. Generally useful to derived classes
-      double fRho; // density (g/cm^3); always double since never fitted
-      double fL; // baseline (km);  ditto
-      T      fDmsq21;
-      T      fDmsq32;
-      T      fTh12;
-      T      fTh13;
-      T      fTh23;
-      T      fdCP;
+    // Set by the user. Generally useful to derived classes
+    double fRho; // density (g/cm^3)
+    double fL; // baseline (km)
+    double fDmsq21;
+    double fDmsq32;
+    double fTh12;
+    double fTh13;
+    double fTh23;
+    double fdCP;
   };
-  typedef _IOscCalculatorAdjustable<double> IOscCalculatorAdjustable;
-
-  //----------------------------------------------------------------------
-  /// Copy parameters from one calculator to another, irrespective of their type
-  template <typename T, typename U>
-  void CopyParams(const osc::_IOscCalculatorAdjustable<T> * inCalc,
-                  osc::_IOscCalculatorAdjustable<U> * outCalc);
 
 } // namespace
 
