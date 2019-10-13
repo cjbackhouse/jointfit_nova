@@ -1,5 +1,4 @@
 ////////////////////////////////////////////////////////////////////////
-// $Id: PMNSOpt.cxx,v 1.1 2013/01/19 16:09:57 jcoelho Exp $
 //
 // Implementation of oscillations of neutrinos in matter in a
 // three-neutrino framework. Two optimizations are relevant:

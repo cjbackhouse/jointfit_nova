@@ -276,8 +276,6 @@ namespace osc {
     double cosaC12D = cos(falpha*fC12*fD);
     double sinaC12D = sin(falpha*fC12*fD);
 
-    // This is coming straight from the MINOS NueAna package...
-
     // First we calculate the terms for the alpha expansion (good to all orders in th13)
 
     // Leading order term 
@@ -338,8 +336,6 @@ namespace osc {
     double sinC13D = sin(fC13*fD);
     double sinaC12D = sin(falpha*fC12*fD);
 
-    // This is coming straight from the MINOS NueAna package...
-
     // First we calculate the terms for the alpha expansion (good to all orders in th13)
 
     // Leading order term 
@@ -395,8 +391,6 @@ namespace osc {
     double sinD = sin(fD);
     double sin2D = sin(2*fD);
     double cosaC12pApam2D = cos((falpha*fC12+fA+falpha-2)*fD);
-
-    // This is coming straight from the MINOS NueAna package...
 
     // First we calculate the terms for the alpha expansion (good to all orders in th13)
 
