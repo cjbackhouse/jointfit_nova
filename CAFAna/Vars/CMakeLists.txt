@@ -9,4 +9,7 @@ add_library(${LIBRARY} SHARED
         )
 link_root(${LIBRARY})
 
+target_link_libraries(${LIBRARY} PUBLIC CAFAnaCore)
+target_link_libraries(${LIBRARY} PUBLIC OscLibFunc)
+
 install(TARGETS ${LIBRARY} LIBRARY DESTINATION ${TARGET_LIBDIR})
