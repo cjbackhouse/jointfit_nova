@@ -29,6 +29,7 @@ void load_libs()
 
   const std::vector<std::string> libs =
     {
+      "OscLibFunc",
       "CAFAnaCore",
       "CAFAnaVars",
       "CAFAnaExperiment",
