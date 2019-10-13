@@ -1,11 +1,7 @@
 #include <cmath>
 #include <vector>
 
-#include "OscLib/func/OscCalculator.h"
-#include "OscLib/func/OscCalculatorGeneral.h"
-#include "OscLib/func/OscCalculatorPMNS.h"
 #include "OscLib/func/OscCalculatorPMNSOpt.h"
-#include "OscLib/func/OscCalculatorPMNS_CPT.h"
 
 #include "TCanvas.h"
 #include "TFile.h"
@@ -46,14 +42,10 @@ int main()
   TCanvas* canvs = new TCanvas("canv_all","",350*kCols,350*kRows);
   canvs->Divide(kCols, kRows);
 
-  osc::OscCalculator osc1;
-  osc::OscCalculatorGeneral osc2;
-  osc::OscCalculatorPMNS osc3;
   osc::OscCalculatorPMNSOpt osc4;
-  osc::OscCalculatorPMNS_CPT osc5;
 
-  osc::IOscCalculatorAdjustable* oscs[kNumCalcs] = {&osc1, &osc2, &osc3, &osc4, &osc5};
-  const TString names[kNumCalcs] = {"Approx", "General", "PMNS", "PMNSOpt", "PMNS_CPT"};
+  osc::IOscCalculatorAdjustable* oscs[kNumCalcs] = {&osc4}; //{&osc1, &osc2, &osc3, &osc4, &osc5};
+  const TString names[kNumCalcs] = {"PMNSOpt"};
 
   const int kIter = 10000;
 
@@ -91,14 +83,6 @@ int main()
       oscs[n]->SetTh13(th13);
       oscs[n]->SetTh23(th23);
       oscs[n]->SetdCP(delta);
-      if (names[n] == "PMNS_CPT"){
-          osc5.SetDmsq21Bar(dmsq21);
-          osc5.SetDmsq32Bar(dmsq32);
-          osc5.SetTh12Bar(th12);
-          osc5.SetTh13Bar(th13);
-          osc5.SetTh23Bar(th23);
-          osc5.SetdCPBar(delta);
-      }
       const double P = oscs[n]->P(anti*from, anti*to, E);
       Ps[n] = P;
     }
