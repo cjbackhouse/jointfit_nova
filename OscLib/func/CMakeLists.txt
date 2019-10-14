@@ -10,3 +10,4 @@ add_library(${LIBRARY} SHARED
 link_root(${LIBRARY})
 
 install(TARGETS ${LIBRARY} LIBRARY DESTINATION ${TARGET_LIBDIR})
+install_headers("${HEADER_FILES}")

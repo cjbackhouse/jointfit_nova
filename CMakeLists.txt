@@ -23,6 +23,16 @@ function(link_root target)
     endforeach()
 endfunction()
 
+# we want to keep the subdirectory structure for the headers
+function(install_headers headers)
+#    message(STATUS "CMAKE_SOURCE_DIR = ${CMAKE_SOURCE_DIR}")
+    foreach(header ${headers})
+        string(REGEX REPLACE "${CMAKE_SOURCE_DIR}/(.*)/[^/]*" "\\1" dir ${header})
+#        message(STATUS "   subdir = ${dir}")
+        install(FILES ${header} DESTINATION inc/${dir})
+    endforeach(header headers)
+endfunction()
+
 
 set(TARGET_LIBDIR lib)
 set(TARGET_BINDIR bin)
@@ -41,3 +51,4 @@ set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR})
 ###########   now go into the subdirs and do the actual work
 add_subdirectory(OscLib)
 add_subdirectory(CAFAna)
+add_subdirectory(Utilities)

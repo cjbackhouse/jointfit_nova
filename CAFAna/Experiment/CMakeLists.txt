@@ -12,3 +12,4 @@ link_root(${LIBRARY})
 target_link_libraries(${LIBRARY} PUBLIC CAFAnaCore)
 
 install(TARGETS ${LIBRARY} LIBRARY DESTINATION ${TARGET_LIBDIR})
+install_headers("${HEADER_FILES}")
