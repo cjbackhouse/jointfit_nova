@@ -25,7 +25,7 @@ void load_libs()
   gSystem->SetFlagsOpt(TString(gSystem->GetFlagsOpt())+" -fdiagnostics-color=auto -UNDEBUG"); // match gcc's maxopt behaviour of retaining assert()
 
   // Include path
-  TString includes = "-I$JOINTFIT_DIR -I$ROOTSYS/include";
+  TString includes = "-I$JOINTFIT_INC -I$ROOTSYS/include";
 
   const std::vector<std::string> libs =
     {
