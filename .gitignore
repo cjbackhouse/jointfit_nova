@@ -1,6 +1,11 @@
 *~
 .lock-waf*
 .waf*
-tmp
+
+# if build inside source tree
+build/
+
+# if installation is into source tree
 bin/
+inc/
 lib/
