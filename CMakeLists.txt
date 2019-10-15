@@ -15,7 +15,7 @@ find_package(ROOT REQUIRED)
 # ROOT does things differently depending on whether it's built for C++17 or not :-\
 string(REGEX REPLACE ".*c\\+\\+([0-9][0-9]).*" "\\1" ROOT_CXX_STANDARD ${ROOT_CXX_FLAGS})
 if(ROOT_CXX_STANDARD LESS_EQUAL 14)
-    message(WARNING "Overriding default C++ standard version (${CMAKE_CXX_STANDARD}) to use C++14 (lowest supported by this package)") #with version deduced from ROOT: ${ROOT_CXX_STANDARD}")
+    message(WARNING "ROOT was built with C++${ROOT_CXX_STANDARD} standard.  Overriding default C++ standard version (C++${CMAKE_CXX_STANDARD}) to use C++14 (lowest supported by this package).  Cross your fingers it builds...")
     set(CMAKE_CXX_STANDARD 14)
 endif()
 
