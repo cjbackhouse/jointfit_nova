@@ -773,11 +773,7 @@ namespace ana
       return;
     }
 
-
-    // force-convert to _Spectrum<double> for ease here since in DebugPlots()
-    // we're not concerned with preserving autodiff or speed.
-    // (more instances further below.)
-    std::unique_ptr<TH1> nom(Spectrum(fPredNom->PredictComponent(calc, flav, curr, sign)).ToTH1(18e20));
+    std::unique_ptr<TH1> nom(fPredNom->PredictComponent(calc, flav, curr, sign).ToTH1(18e20));
     const int nbins = nom->GetNbinsX();
 
     TGraph* curves[nbins];
@@ -786,7 +782,7 @@ namespace ana
     for(int i = 0; i <= 80; ++i){
       const double x = .1*i-4;
       const SystShifts ss(it->first, x);
-      std::unique_ptr<TH1> h(Spectrum(PredictComponentSyst(calc, ss, flav, curr, sign)).ToTH1(18e20));
+      std::unique_ptr<TH1> h(PredictComponentSyst(calc, ss, flav, curr, sign).ToTH1(18e20));
 
       for(int bin = 0; bin < nbins; ++bin){
         if(i == 0){
@@ -808,12 +804,12 @@ namespace ana
       if(it->second.shifts[shiftIdx] == 0) pNom = it->second.preds[shiftIdx];
     }
     if(pNom){ // if not, probably MinimizeMemory() was called
-      std::unique_ptr<TH1> hnom(Spectrum(pNom->PredictComponent(calc, flav, curr, sign)).ToTH1(18e20));
+      std::unique_ptr<TH1> hnom(pNom->PredictComponent(calc, flav, curr, sign).ToTH1(18e20));
 
       for(unsigned int shiftIdx = 0; shiftIdx < it->second.shifts.size(); ++shiftIdx){
         if(!it->second.preds[shiftIdx]) continue; // Probably MinimizeMemory()
         std::unique_ptr<TH1> h;
-        h = std::move(std::unique_ptr<TH1>(Spectrum(it->second.preds[shiftIdx]->PredictComponent(calc, flav, curr, sign)).ToTH1(18e20)));
+        h = std::move(std::unique_ptr<TH1>(it->second.preds[shiftIdx]->PredictComponent(calc, flav, curr, sign).ToTH1(18e20)));
 
         for(int bin = 0; bin < nbins; ++bin){
           const double ratio = h->GetBinContent(bin+1)/hnom->GetBinContent(bin+1);
