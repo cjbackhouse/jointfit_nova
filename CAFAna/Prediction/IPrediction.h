@@ -90,8 +90,6 @@ namespace ana
       virtual OscillatableSpectrum ComponentCC(int from, int to) const
       {std::cout << "WARNING! ComponentCC is unimplemented in IPrediction" << std::endl; abort();}
 
-      // todo: we are discarding autodiff for any prediction that uses these by having it only return Spectrum,
-      //       but I haven't thought of a good solution that doesn't require an alternate method name
       // nc
       virtual Spectrum ComponentNCTotal() const
       {std::cout << "WARNING! ComponentNCTotal is unimplemented in IPrediction" << std::endl; abort();}
