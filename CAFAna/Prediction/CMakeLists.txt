@@ -1,4 +1,4 @@
-set(LIBRARY CAFAnaExperiment)
+set(LIBRARY CAFAnaPrediction)
 
 file(GLOB HEADER_FILES *.h)
 file(GLOB SOURCES *.cxx)
@@ -9,7 +9,7 @@ add_library(${LIBRARY} SHARED
 )
 link_root(${LIBRARY})
 
-target_link_libraries(${LIBRARY} PUBLIC CAFAnaCore CAFAnaPrediction)
+target_link_libraries(${LIBRARY} PUBLIC CAFAnaCore CAFAnaExtrap)
 
 install(TARGETS ${LIBRARY} LIBRARY DESTINATION ${TARGET_LIBDIR})
 install_headers("${HEADER_FILES}")
