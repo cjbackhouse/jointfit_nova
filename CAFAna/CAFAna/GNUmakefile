@@ -1,7 +1,7 @@
 PACKAGE     := CAFAna
 LIB_TYPE    := shared
 LIB         := lib$(PACKAGE)
-SUBDIRS     := Core Vars Experiment
+SUBDIRS     := Core Vars Extrap Prediction Experiment
 LIBCXXFILES := $(wildcard *.cxx)
 
 ########################################################################

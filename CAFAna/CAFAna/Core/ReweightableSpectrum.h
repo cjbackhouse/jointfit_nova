@@ -4,9 +4,9 @@
 
 #include <string>
 
+#include "TH2.h"
+
 class TDirectory;
-class TH2;
-class TH2D;
 
 namespace ana
 {

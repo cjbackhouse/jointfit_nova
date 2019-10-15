@@ -40,6 +40,8 @@ void load_libs()
     {
       "CAFAnaCore",
       "CAFAnaVars",
+      "CAFAnaExtrap",
+      "CAFAnaPrediction",
       "CAFAnaExperiment",
     };
 
