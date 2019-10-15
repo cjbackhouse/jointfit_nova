@@ -52,8 +52,8 @@ include_directories(
 
 # by default make the bin/ and lib/ dirs in the top of the source dir.
 # can by overridden on command line if desired
-if (NOT CMAKE_INSTALL_PREFIX)
-    set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR})
+if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}" CACHE PATH "..." FORCE)
 endif()
 message(STATUS "Installing into: ${CMAKE_INSTALL_PREFIX}")
 
