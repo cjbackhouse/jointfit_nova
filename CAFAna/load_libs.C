@@ -12,6 +12,11 @@ void load(std::string lib)
 
 void load_libs()
 {
+  if(getenv("JOINTFIT_DIR") == 0){
+    std::cerr << "Must export $JOINTFIT_DIR variable, pointing to the CAFAna install directory. By default this is one level above the CAFAna/ directory itself." << std::endl;
+    abort();
+  }
+
   // This magic incantation prevents ROOT doing slow cleanup work in
   // TList::RecursiveRemove() under ~TH1(). It also tends to lead to shutdown
   // crashes. This seems like a good compromise: go fast in batch mode
@@ -25,7 +30,10 @@ void load_libs()
   gSystem->SetFlagsOpt(TString(gSystem->GetFlagsOpt())+" -fdiagnostics-color=auto -UNDEBUG"); // match gcc's maxopt behaviour of retaining assert()
 
   // Include path
-  TString includes = "-I$JOINTFIT_INC -I$ROOTSYS/include";
+  TString includes = "-I$JOINTFIT_DIR/inc -I$ROOTSYS/include";
+
+  // Library path
+  gSystem->AddDynamicPath("$JOINTFIT_DIR/lib");
 
   const std::vector<std::string> libs =
     {
