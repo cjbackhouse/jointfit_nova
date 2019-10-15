@@ -74,20 +74,6 @@ namespace ana
     fexcept_t fBackup;
   };
 
-  /** \brief Compute bin-to-bin covariance matrix from a collection of sets of bin contents.
-
-      \param binSets   Collection of sets of bins from which covariances should be calculated
-      \param firstBin  The first bin that should be considered (inclusive)
-      \param lastBin   The last bin that should be considered (inclusive).  -1 means "last in set"
-
-      \returns  unique_ptr to TMatrixD containing computed covariance matrix unless binSets.size() < 2,
-                in which case the unique_ptr's target is nullptr.
-
-      Note TH1D is a child class of TArrayD -- so you can pass a vector
-      of TH1D* to this method.
-  **/
-  std::unique_ptr<TMatrixD> CalcCovMx(const std::vector<TArrayD*> & binSets, int firstBin=0, int lastBin=-1);
-
   class LLPerBinFracSystErr
   {
   public:
@@ -128,35 +114,6 @@ namespace ana
   double LogLikelihoodDerivative(const TH1D* eh, const TH1D* oh,
                                  const std::vector<double>& dedx);
 
-  /**  \brief Chi-squared calculation using a covariance matrix.
-
-       \param exp   Expected bin counts
-       \param obs   Observed bin counts
-       \param covmxinv Inverse of covariance matrix.  Must have same dimensions as exp and obs
-
-       \returns The chi^2 calculated according to the formula from the PDG:
-       \f[ \chi^2 = (\vec{o}-\vec{e})^{T} V^{-1} (\vec{o} - \vec{e}) \]
-
-       Note that this implicitly assumes Gaussian statistics for the bin counts!
-  **/
-  double Chi2CovMx(const TVectorD& exp, const TVectorD& obs, const TMatrixD& covmxinv);
-
-  /// Chi-squared calculation using covariance matrix (calls the TVectorD version internally).
-  double Chi2CovMx(const TH1* exp, const TH1* obs, const TMatrixD& covmxinv);
-
-  /// \brief For use with low-statistics data in combination with a MC
-  /// prediction whose bins have a correlated uncertainty.
-  ///
-  /// \param exp The nominal expectation
-  /// \param obs The observed data
-  /// \param covmxinv The inverse of the correlation matrix between MC bins.
-  ///                 DO NOT include any contribution for the statistical
-  ///                 uncertainty on the data.
-  ///
-  /// The matrix must be symmetric and have dimension equal to the number of
-  /// non-overflow bins in the histograms.
-  double LogLikelihoodCovMx(const TH1D* exp, const TH1D* obs, const TMatrixD& covmxinv);
-
   /// \brief Internal helper for \ref Surface and \ref FCSurface
   ///
   /// Creates a histogram having bins \em centred at the min and max
@@ -164,19 +121,6 @@ namespace ana
   TH2F* ExpandedHistogram(const std::string& title,
                           int nbinsx, double xmin, double xmax,
                           int nbinsy, double ymin, double ymax);
-
-  /// \brief Invert a symmetric matrix with possibly empty rows/columns.
-  ///
-  /// Invert a symmetric matrix that may have empty rows/columns,
-  /// which (strictly speaking) make it impossible to invert the matrix.
-  /// (This often arises when computing covariance matrices for predictions
-  ///  which have empty bins; the covariance is 0 for the entire row/column
-  ///  in that case.)
-  /// Since those rows/cols are not useful, we can sidestep the problem
-  /// by removing them (and the corresponding columns)
-  /// from the matrix, inverting that, then re-inserting
-  /// the null rows/columns.
-  std::unique_ptr<TMatrixD> SymmMxInverse(const TMatrixD& mx);
 
   /// Utility function to avoid need to switch on bins.IsSimple()
   TH1D* MakeTH1D(const char* name, const char* title, const Binning& bins);
@@ -233,54 +177,7 @@ namespace ana
   /// Read list of input files from a text file, one per line
   std::vector<std::string> LoadFileList(const std::string& listfile);
 
-  /// \brief Extract map of metadata parameters from a CAF file
-  ///
-  /// \param dir The "meta" directory from the CAF file
-  /// \return    A map from metadata field name to metadata value
-  std::map<std::string, std::string> GetCAFMetadata(TDirectory* dir);
-
-  /// \brief \a base += \a add
-  ///
-  /// \param base The original source of strings, will be altered
-  /// \param add  Strings to add to \a base if missing
-  /// \param mask Fields for which there was a conflict, will be altered
-  void CombineMetadata(std::map<std::string, std::string>& base,
-                       const std::map<std::string, std::string>& add,
-                       std::set<std::string>& mask);
-
-  /// \brief Write map of metadata parameters into a CAF file
-  ///
-  /// \param dir  The "meta" directory of the CAF file
-  /// \param meta Map from metadata field name to metadata value
-  void WriteCAFMetadata(TDirectory* dir,
-                        const std::map<std::string, std::string>& meta);
-
-  /// Is this a grid (condor) job?
-  bool RunningOnGrid();
-
   bool AlmostEqual(double a, double b);
-
-  std::string pnfs2xrootd(std::string loc, bool unauth = false);
-
-  // Calling this function will return a Fourier series, fit to the input
-  // histogram.  Assumes x-axis covers one period
-  class FitToFourier
-  {
-  public:
-    FitToFourier(TH1* h, double xlo, double xhi, int NOsc);
-    ~FitToFourier();
-    TF1* Fit() const;
-    double operator()(double *x, double *par) const;
-  private:
-
-    const TH1*   fHist; // Histogram to fit
-    const double fxlo;  // Lower bound
-    const double fxhi;  // Upper bound - assumed to be 1 osc from the low end
-    const int    fNOsc; // Highest harmonic to include
-
-  };
-
-  void EnsurePositiveDefinite(TH2* mat);
 
   /// Returns a masking histogram based on axis limits
   TH1* GetMaskHist(const Spectrum& s,
