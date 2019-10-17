@@ -21,14 +21,14 @@ namespace ana
   SystShifts::SystShifts(const ISyst* syst, double shift)
     : fID(fgNextID++)
   {
-    if(shift != 0) fSysts.emplace(syst, Clamp(shift, syst));
+    if(shift != 0) fSysts.emplace(syst, shift);
   }
 
   //----------------------------------------------------------------------
   SystShifts::SystShifts(const std::map<const ISyst*, double>& shifts)
     : fID(fgNextID++)
   {
-    for(auto it: shifts) if(it.second != 0) fSysts.emplace(it.first, Clamp(it.second, it.first));
+    for(auto it: shifts) if(it.second != 0) fSysts.emplace(it.first, it.second);
   }
 
   //----------------------------------------------------------------------
@@ -37,7 +37,7 @@ namespace ana
     fID = fgNextID++;
 
     fSysts.erase(syst);
-    if(shift != 0) fSysts.emplace(syst, Clamp(shift, syst));
+    if(shift != 0) fSysts.emplace(syst, shift);
   }
 
   //----------------------------------------------------------------------
@@ -91,25 +91,5 @@ namespace ana
     std::vector<const ISyst*> ret;
     for(auto it: fSysts) ret.push_back(it.first);
     return ret;
-  }
-
-  //----------------------------------------------------------------------
-  double SystShifts::Clamp(double x, const ISyst* s)
-  {
-    static bool once = true;
-    static bool shouldClamp;
-    if(once){
-      once = false;
-      char* e = getenv("CAFANA_DONT_CLAMP_SYSTS");
-      shouldClamp = (e && TString(e) != "0");
-      if(!shouldClamp){
-        std::cout << "SystShifts.cxx: clamping disabled by environment variable" << std::endl;
-      }
-    }
-
-    if(shouldClamp)
-      return std::min(std::max(x, s->Min()), s->Max());
-    else
-      return x;
   }
 }

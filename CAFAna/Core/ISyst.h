@@ -9,10 +9,7 @@ namespace ana
   {
   public:
     ISyst(const std::string& shortName,
-          const std::string& latexName,
-	  bool applyPenalty = true,
-	  double min = -3,
-	  double max = +3);
+          const std::string& latexName);
     ISyst(const ISyst &) = delete;   // no copying.
     ISyst(ISyst && rhs) = delete;    // no moving either.
     virtual ~ISyst();
@@ -29,13 +26,6 @@ namespace ana
     virtual double Penalty(double x) const;
     virtual double PenaltyDerivative(double x) const;
 
-    /// Should a penalty be applied for this shift?
-    virtual bool ApplyPenalty() const {return fApplyPenalty;}
-
-    /// Return the min/max value for this syst
-    virtual double Min() const{return fMin;}
-    virtual double Max() const{return fMax;}
-
     /// PredictionInterp normally interpolates between spectra made at
     /// +/-1,2,3sigma. For some systematics that's overkill. Override this
     /// function to specify different behaviour for this systematic.
@@ -47,7 +37,6 @@ namespace ana
   private:
     std::string fShortName;
     std::string fLatexName;
-    bool fApplyPenalty;
     double fMin;
     double fMax;
   };

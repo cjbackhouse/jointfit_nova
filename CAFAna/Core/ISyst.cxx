@@ -8,11 +8,8 @@ namespace ana
 {
   //----------------------------------------------------------------------
   ISyst::ISyst(const std::string& shortName,
-               const std::string& latexName,
-	       bool applyPenalty,
-	       double min,
-	       double max)
-    : fShortName(shortName), fLatexName(latexName), fApplyPenalty(applyPenalty), fMin(min), fMax(max)
+               const std::string& latexName)
+    : fShortName(shortName), fLatexName(latexName)
   {
     SystRegistry::Register(this);
   }
@@ -28,38 +25,14 @@ namespace ana
   //----------------------------------------------------------------------
   double ISyst::Penalty(double x) const
   {
-    if(fApplyPenalty){
-      // Regular quadratic penalty term
-      return x*x;
-    }
-    else{
-      // Otherwise, no penalty within range, but still apply one outside
-      if(x >= Min() && x <= Max()) return 0;
-
-      // Try to direct fit back towards centre of the space. Engineer penalty
-      // to be zero at the limits.
-      const double mean = (Min()+Max())/2;
-      const double rad = (Max()-Min())/2;
-      return util::sqr((x-mean)/rad)-1;
-    }
+    // Regular quadratic penalty term
+    return x*x;
   }
 
   //----------------------------------------------------------------------
   double ISyst::PenaltyDerivative(double x) const
   {
-    if(fApplyPenalty){
-      // Regular quadratic penalty term
-      return 2*x;
-    }
-    else{
-      // Otherwise, no penalty within range, but still apply one outside
-      if(x >= Min() && x <= Max()) return 0;
-
-      // Try to direct fit back towards centre of the space. Engineer penalty
-      // to be zero at the limits.
-      const double mean = (Min()+Max())/2;
-      const double rad = (Max()-Min())/2;
-      return 2*(x-mean)/rad;
-    }
+    // Regular quadratic penalty term
+    return 2*x;
   }
 }
