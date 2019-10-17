@@ -53,6 +53,18 @@ namespace ana
   }
 
   //----------------------------------------------------------------------
+  OscillatableSpectrum::OscillatableSpectrum(TH2* h,
+                                             const std::vector<std::string>& labels,
+                                             const std::vector<Binning>& bins,
+                                             double pot, double livetime)
+    : ReweightableSpectrum(h, labels, bins, pot, livetime),
+      fCachedOsc(0, {}, {}, 0, 0),
+      fCachedHash(0)
+  {
+    fTrueLabel = "True Energy (GeV)";
+  }
+
+  //----------------------------------------------------------------------
   OscillatableSpectrum::OscillatableSpectrum(std::unique_ptr<TH2D> h,
                                              const std::vector<std::string>& labels,
                                              const std::vector<Binning>& bins,
