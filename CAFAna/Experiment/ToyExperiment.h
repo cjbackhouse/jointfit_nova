@@ -1,19 +1,19 @@
 #pragma once
 
-#include "CAFAna/Experiment/IExperiment.h"
-
-#include "CAFAna/Core/OscillatableSpectrum.h"
+#include "CAFAna/Experiment/SingleSampleExperiment.h"
 
 namespace ana
 {
-  class ToyExperiment: public IExperiment
+  class ToyExperiment: public SingleSampleExperiment
   {
   public:
     ToyExperiment();
-    double ChiSq(osc::IOscCalculatorAdjustable* osc,
-                 const SystShifts& syst = SystShifts::Nominal()) const override;
-  protected:
-    OscillatableSpectrum fMC;
-    Spectrum fData;
   };
+
+  struct DummyNormSyst: public ISyst
+  {
+    DummyNormSyst();
+  };
+
+  extern const DummyNormSyst dummySyst;
 }
