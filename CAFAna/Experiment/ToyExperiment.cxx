@@ -1,11 +1,13 @@
 #include "CAFAna/Experiment/ToyExperiment.h"
 
+#include "CAFAna/Core/Utilities.h"
+
 namespace ana
 {
   ToyExperiment::ToyExperiment()
-    : SingleSampleExperiment(LoadFromFile<IPrediction>("state_v1.root",
+    : SingleSampleExperiment(LoadFromFile<IPrediction>(FindCAFAnaDir()+"/state_v1.root",
                                                        "pred").release(),
-                             *LoadFromFile<Spectrum>("state_v1.root",
+                             *LoadFromFile<Spectrum>(FindCAFAnaDir()+"/state_v1.root",
                                                      "mock_data"))
   {
   }

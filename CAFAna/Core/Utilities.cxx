@@ -379,25 +379,14 @@ namespace ana
   //----------------------------------------------------------------------
   std::string FindCAFAnaDir()
   {
-    #ifndef USE_CAFANA_ENVVAR
-    const char* pub = getenv("SRT_PUBLIC_CONTEXT");
-    const char* priv = getenv("SRT_PRIVATE_CONTEXT");
-
-    if(priv && priv != std::string(".")){
-      const std::string ret = std::string(priv)+"/CAFAna/";
-      struct stat junk;
-      if(stat(ret.c_str(), &junk) == 0) return ret;
-    }
-    assert(pub);
-    return std::string(pub)+"/CAFAna/";
-    #else
-    const char *cafana = getenv("CAFANA");
-    assert(cafana);
+    const char* cafana = getenv("JOINTFIT_DIR");
     struct stat junk;
-    if(stat(cafana, &junk) == 0) {return cafana;}
-    assert(false);
-    return "";//to stop the compiler error.
-    #endif
+    if(!cafana || stat(cafana, &junk) != 0){
+      std::cout << "Couldn't find CAFAna dir (using $JOINTFIT_DIR)" << std::endl;
+      abort();
+    }
+
+    return cafana+std::string("/CAFAna/");
   }
 
   //----------------------------------------------------------------------
